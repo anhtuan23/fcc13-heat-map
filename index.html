@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Monthly Global Land-Surface Temperature</title>
+  <link rel="shortcut icon" href="#" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" type="text/css" media="screen" href="main.css" />
+  <script src="d3/d3.v5.js" defer></script>
+  <script src="d3/d3-legend.js" defer></script>
+  <script src="main.js" defer></script>
+  <script src="https://cdn.freecodecamp.org/testable-projects-fcc/v1/bundle.js" defer></script>
+</head>
+
+<body>
+  <div id="wrapper">
+    <p id="title">Monthly Global Land-Surface Temperature</p>
+    <p id="subtitle"><span id="min-year"></span> - <span id="max-year"></span>: base temperature <span id="base-temp"></span>℃</p>
+    <div id="tooltip" class="hidden">
+      <p id="time"></p>
+      <p id="temp"></p>
+      <p id="diff"></p>
+    </div>
+    <svg></svg>
+  </div>
+</body>
+
+</html>
