@@ -1,8 +1,8 @@
 d3.json("global-temperature.json").then(data => {
 
-  const margin = { top: 20, right: 30, bottom: 20, left: 80 };
+  const margin = { top: 20, right: 140, bottom: 20, left: 80 };
 
-  const svgWidth = 1370, svgHeight = 500;
+  const svgWidth = 1350, svgHeight = 500;
   const contentWidth = svgWidth - margin.left - margin.right,
     contentHeight = svgHeight - margin.top - margin.bottom;
 
@@ -43,31 +43,34 @@ d3.json("global-temperature.json").then(data => {
     .data(dataset)
     .enter()
     .append('rect')
-    .classed('dot', true)
+    .classed('cell', true)
     .attr('fill', d => colorScale(baseTemp + d.variance))
     .attr('width', barWidth)
     .attr('height', barHeight)
     .attr('x', d => xScale(d.year))
     .attr('y', d => yScale(d.month))
+    .attr('data-month', d => d.month - 1)//for FCC test
+    .attr('data-year', d => d.year)//for FCC test
+    .attr('data-temp', d => baseTemp + d.variance)//for FCC test
     .on("mouseover", function (d) {
-      d3.select(this).attr("fill", "green");
+      d3.select(this).attr("stroke", "black");
 
       //Get this bar's x/y values, then augment for the tooltip
-      var xPosition = parseInt(d3.select(this).attr("cx")) + margin.left;
-      var yPosition = parseInt(d3.select(this).attr("cy")) + titleHeight;
+      var xPosition = parseInt(d3.select(this).attr("x")) - margin.left / 2;
+      var yPosition = parseInt(d3.select(this).attr("y"));
       //Update the tooltip position and value
       const tooltip = d3.select("#tooltip")
-        .attr("data-year", d.Year)//for FCC test
+        .attr("data-year", d.year)//for FCC test
         .style("left", xPosition + "px")
         .style("top", yPosition + "px");
-      tooltip.select("#name").text(d.Name + ": " + d.Nationality);
-      tooltip.select("#time").text(`Year: ${d.Year}, Time: ${d.Time}`);
-      tooltip.select("#doping").text(d.Doping);
+      tooltip.select("#time").text(d.year + " - " + monthArr[d.month - 1]);
+      tooltip.select("#temp").text((baseTemp + d.variance).toFixed(1) + "℃");
+      tooltip.select("#diff").text((d.variance > 0 ? "+" : "") + d.variance.toFixed(1) + "℃");
       //Show the tooltip
       d3.select("#tooltip").classed("hidden", false);
     })
     .on("mouseout", function (d) {
-      d3.select(this).attr("fill", colorScale(baseTemp + d.variance));
+      d3.select(this).attr("stroke", "none");
       //Hide the tooltip
       d3.select("#tooltip").classed("hidden", true);
     });
@@ -98,19 +101,15 @@ d3.json("global-temperature.json").then(data => {
     .attr("font-size", "1.3em")
     .attr("dy", "1.8em")
     .style("text-anchor", "middle")
-    .text("Time in Minutes");
-
-  var ordinal = d3.scaleOrdinal()
-    .domain(["No Doping Allegation", "Riders With Doping Allegations"])
-    .range([noDopingColor, dopingColor]);
+    .text("Months");
 
   svg.append("g")
     .attr("id", "legend")
-    .attr("transform", `translate(${margin.left + contentWidth - 300}, ${margin.top + 100})`);
+    .attr("transform", `translate(${margin.left + contentWidth + 20}, ${margin.top})`);
 
   var legendOrdinal = d3.legendColor()
-    .shapePadding(10)
-    .scale(ordinal);
+    .labels(d3.legendHelpers.thresholdLabels)
+    .scale(colorScale);
 
   svg.select("#legend")
     .call(legendOrdinal);
